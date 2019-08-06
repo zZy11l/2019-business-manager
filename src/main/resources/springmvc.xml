@@ -15,6 +15,8 @@
 
     <mvc:annotation-driven />
     <context:component-scan base-package="com.neuedu"/>
+
+
     <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/jsp/"/>
@@ -29,6 +31,16 @@
         </property>
     </bean>
 
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/home"/>
+            <bean class="com.neuedu.interceptor.AuthorityInterceptor"></bean>
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/user/category/**"/>
+            <bean class="com.neuedu.interceptor.AuthorityInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
 
 
 
