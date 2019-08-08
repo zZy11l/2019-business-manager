@@ -22,7 +22,7 @@
 <button  onclick="toRegister()">去注册</button>
 <script>
     function toRegister() {
-       location.href="http://localhost:8080/register";
+       location.href="http://localhost:8080/user/register";
     }
 
 </script>

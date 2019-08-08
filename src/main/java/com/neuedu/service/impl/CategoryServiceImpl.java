@@ -43,7 +43,8 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public Category findOne(Integer id) {
 
-
-        return categoryMapper.selectByPrimaryKey(id);
+        Category category=categoryMapper.selectByPrimaryKey(id);
+        System.out.println(category);
+        return category;
     }
 }

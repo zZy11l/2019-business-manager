@@ -6,7 +6,7 @@ import com.neuedu.dao.UserInfoMapper;
 import com.neuedu.exception.MyException;
 import com.neuedu.pojo.UserInfo;
 import com.neuedu.service.IUserService;
-import org.apache.ibatis.annotations.Param;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +60,38 @@ public class UserServiceImpl implements IUserService {
 
 
         return userInfo;
+    }
+
+    @Override
+    public int register(UserInfo userInfo) {
+        if(userInfoMapper.existUsername(userInfo.getUsername())==1){
+            throw new MyException("用户名已经存在");
+        }
+
+
+
+        return userInfoMapper.insert(userInfo);
+    }
+
+    @Override
+    public int update(UserInfo userInfo) {
+        return userInfoMapper.updateByPrimaryKey(userInfo);
+    }
+
+    @Override
+    public int delete(int id) {
+        return userInfoMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public List<UserInfo> findAll() {
+
+        return userInfoMapper.selectAll();
+    }
+
+    @Override
+    public UserInfo findOne(int id) {
+        return userInfoMapper.selectByPrimaryKey(id);
     }
 
 }

@@ -63,4 +63,21 @@ public class CategoryController {
 
     }
 
+    @RequestMapping(value = "add",method =RequestMethod.GET)
+    public String add(){
+
+        return "category_add";
+    }
+
+    @RequestMapping(value = "add",method =RequestMethod.POST)
+    public String add(Category category){
+
+        if(categoryService.add(category)==0)
+        {
+            return "category_add";
+        }
+
+        return "redirect:/user/category/find";
+    }
+
 }

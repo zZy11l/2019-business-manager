@@ -28,7 +28,7 @@
         <tr>
             <td>${category.id}</td>
             <td>${category.name}</td>
-            <td>${category.parentId}</td>
+            <td>${category.parentCategory.name}</td>
             <td>${category.status}</td>
             <td>${category.createTime}</td>
             <td>${category.updateTime}</td>
@@ -40,5 +40,13 @@
     </c:forEach>
 
 </table>
+<button onclick="category_add()">添加新的分类</button>
+<script>
+    function category_add() {
+        location.href="http://localhost:8080/user/category/add";
+    }
+
+</script>
+<a href="/user/home">返回主页</a>
 </body>
 </html>

@@ -20,7 +20,10 @@
 <h1>欢迎，${current_user.username}登录</h1>
 
 <h2>你想要干什么？</h2>
-<a href="category/find">操作类别</a>
+<a href="find">操作用户</a><br>
+<a href="category/find">操作类别</a><br>
+<a href="product/all">操作商品</a><br>
+
 
 
 

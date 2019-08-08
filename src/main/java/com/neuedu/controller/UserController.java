@@ -6,6 +6,7 @@ import com.neuedu.service.IUserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user/")
@@ -66,6 +68,62 @@ public class UserController {
     }
 
 
+    @RequestMapping(value = "register",method = RequestMethod.GET)
+    public String register(){
+        return "register";
+    }
 
+
+    @RequestMapping(value = "register",method = RequestMethod.POST)
+    public String register(UserInfo userInfo){
+
+        userService.register(userInfo);
+
+        return "redirect:/user/login";
+    }
+
+    @RequestMapping(value = "update/{id}",method = RequestMethod.GET)
+    public String update(@PathVariable("id") Integer id,
+                         HttpSession session){
+
+        session.setAttribute(Const.USER_INFO,userService.findOne(id));
+
+
+        return "user_update";
+    }
+
+
+    @RequestMapping(value = "update/{id}",method = RequestMethod.POST)
+    public String update(UserInfo userInfo){
+
+
+
+        if(userService.update(userInfo)!=0){
+            return "redirect:/user/find";
+        }
+
+        return "user_update";
+    }
+
+    @RequestMapping(value = "find",method = RequestMethod.GET)
+    public String findAll(HttpSession session){
+
+        List<UserInfo> categoryList= userService.findAll();
+
+        session.setAttribute(Const.UESR_LIST,categoryList);
+
+        return "user_list";
+
+    }
+    @RequestMapping(value = "delete/{id}",method = RequestMethod.GET)
+    public String delete(@PathVariable("id") Integer id){
+
+        userService.delete(id);
+
+
+        return "redirect:/user/find";
+
+
+    }
 
 }

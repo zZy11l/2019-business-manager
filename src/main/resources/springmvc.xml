@@ -33,15 +33,28 @@
 
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/user/home"/>
+
+            <mvc:mapping path="/user/**"/>
+            <mvc:exclude-mapping path="/user/login" />
+            <mvc:exclude-mapping path="/user/register" />
             <bean class="com.neuedu.interceptor.AuthorityInterceptor"></bean>
+
         </mvc:interceptor>
-        <mvc:interceptor>
-            <mvc:mapping path="/user/category/**"/>
-            <bean class="com.neuedu.interceptor.AuthorityInterceptor"></bean>
-        </mvc:interceptor>
+
     </mvc:interceptors>
 
+    <!--支持Json的Bean,配置ViewResolver。 可以用多个ViewResolver。 使用order属性排序。 InternalResourceViewResolver放在最后。 -->
+    <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="1" />
+        <property name="defaultViews">
+            <list>
+                <!-- JSON View -->
+                <bean
+                        class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+                </bean>
+            </list>
+        </property>
+    </bean>
 
 
 
