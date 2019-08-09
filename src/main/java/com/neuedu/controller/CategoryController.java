@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -19,27 +20,38 @@ public class CategoryController {
 
     @Autowired
     private ICategoryService categoryService;
-    @RequestMapping(value = "update/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "index/{id}",method = RequestMethod.GET)
     public String update(@PathVariable("id") Integer id,
-                         HttpSession session){
+                         HttpServletRequest request){
 
-        session.setAttribute(Const.CATEGORY_INFO,categoryService.findOne(id));
+        if(id==0||id==null){
+
+        }
+        else
+        request.setAttribute(Const.CATEGORY_INFO,categoryService.findOne(id));
 
 
-        return "category_update";
+        return "category/index";
     }
 
 
-    @RequestMapping(value = "update/{id}",method = RequestMethod.POST)
-    public String update(Category category){
+    @RequestMapping(value = "index/{id}",method = RequestMethod.POST)
+    public String update(@PathVariable("id") Integer id,Category category){
+
+        if(id==0||id==null){
+            categoryService.add(category);
+        }
+
+    else{
+            categoryService.update(category);
+        }
 
 
 
-      if(categoryService.update(category)!=0){
           return "redirect:/user/category/find";
-      }
 
-        return "category_update";
+
+
     }
 
     @RequestMapping(value = "find",method = RequestMethod.GET)
@@ -49,7 +61,7 @@ public class CategoryController {
 
       session.setAttribute(Const.CATEGORY_LIST,categoryList);
 
-      return "category_list";
+      return "category/list";
 
     }
     @RequestMapping(value = "delete/{id}",method = RequestMethod.GET)
@@ -63,21 +75,6 @@ public class CategoryController {
 
     }
 
-    @RequestMapping(value = "add",method =RequestMethod.GET)
-    public String add(){
 
-        return "category_add";
-    }
-
-    @RequestMapping(value = "add",method =RequestMethod.POST)
-    public String add(Category category){
-
-        if(categoryService.add(category)==0)
-        {
-            return "category_add";
-        }
-
-        return "redirect:/user/category/find";
-    }
 
 }

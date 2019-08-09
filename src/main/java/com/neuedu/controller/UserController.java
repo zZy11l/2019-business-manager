@@ -1,7 +1,11 @@
 package com.neuedu.controller;
 
 import com.neuedu.consts.Const;
+import com.neuedu.pojo.Category;
+import com.neuedu.pojo.Product;
 import com.neuedu.pojo.UserInfo;
+import com.neuedu.service.ICategoryService;
+import com.neuedu.service.IProductService;
 import com.neuedu.service.IUserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,10 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private ICategoryService categoryService;
+    @Autowired
+    private IProductService productService;
 
     @RequestMapping(value = "login",method = RequestMethod.GET)
     public String login(){
@@ -33,12 +41,18 @@ public class UserController {
                         HttpSession session,
                         HttpServletResponse response){
 
+        List<Category> categoryList= categoryService.findAll();
+        List<Product> productList=productService.findAll();
+
         UserInfo userInfo_result=userService.login(userInfo);
+
         if(userInfo==null){
             return "login";
         }
 
         session.setAttribute(Const.CURRENT_USER,userInfo_result);
+        session.setAttribute(Const.CATEGORY_LIST,categoryList);
+        session.setAttribute(Const.PRODUCT_LIST,productList);
 
         Cookie username_cookie=new Cookie("username",userInfo.getUsername());
         Cookie password_cookie=new Cookie("password",userInfo.getPassword());
@@ -51,58 +65,51 @@ public class UserController {
 
 
 
-        return "home";
+        return "redirect:/user/home";
     }
 
     @RequestMapping(value = "home",method = RequestMethod.GET)
-    public String home(HttpSession session){
+    public String home(){
 
 
-        return "home";
+        return "home/home";
     }
 
 
-    @RequestMapping(value = "home",method = RequestMethod.POST)
-    public String categoryUpdate(){
-        return "home";
-    }
 
-
-    @RequestMapping(value = "register",method = RequestMethod.GET)
-    public String register(){
-        return "register";
-    }
-
-
-    @RequestMapping(value = "register",method = RequestMethod.POST)
-    public String register(UserInfo userInfo){
-
-        userService.register(userInfo);
-
-        return "redirect:/user/login";
-    }
 
     @RequestMapping(value = "update/{id}",method = RequestMethod.GET)
     public String update(@PathVariable("id") Integer id,
-                         HttpSession session){
+                         HttpServletRequest request){
 
-        session.setAttribute(Const.USER_INFO,userService.findOne(id));
+        if(id==0||id==null){
+
+        }
+        else{
+            request.setAttribute(Const.USER_INFO,userService.findOne(id));
+        }
 
 
-        return "user_update";
+        return "user/user_update";
     }
 
 
     @RequestMapping(value = "update/{id}",method = RequestMethod.POST)
-    public String update(UserInfo userInfo){
+    public String update(@PathVariable("id") Integer id,UserInfo userInfo){
 
 
+        if(id==0||id==null){
+            userService.register(userInfo);
 
-        if(userService.update(userInfo)!=0){
-            return "redirect:/user/find";
+        }
+        else{
+            userService.update(userInfo);
+
         }
 
-        return "user_update";
+
+
+        return "redirect:/user/find";
     }
 
     @RequestMapping(value = "find",method = RequestMethod.GET)
@@ -112,7 +119,7 @@ public class UserController {
 
         session.setAttribute(Const.UESR_LIST,categoryList);
 
-        return "user_list";
+        return "user/user_list";
 
     }
     @RequestMapping(value = "delete/{id}",method = RequestMethod.GET)

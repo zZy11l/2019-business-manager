@@ -19,6 +19,7 @@
     类别名称：<input type="text" value=${category_info.name} name="name"/><br>
     类别状态 ： <input type="text" value=${category_info.status} name="status"/><br>
     所属父类：<select name="parentId">
+
     <option value="0">无</option>
     <c:forEach items="${category_list}" var="category">
         <c:if test="${category.id==category_info.parentId}">

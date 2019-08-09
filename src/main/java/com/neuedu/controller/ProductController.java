@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 
@@ -40,7 +41,14 @@ public class ProductController {
 
         for(Product product:products){
             String s=product.getSubImages();
-            product.setSubImages(s.substring(1,s.length()-1).replace(" ", ""));
+            String m=s.substring(1,s.length()-1).replace(" ", "");
+            String[] n= m.split(",");
+            List<String> subImageslist=new ArrayList<>();
+            for(int i=0;i<n.length;i++){
+                subImageslist.add(n[i]);
+            }
+            product.setSubImagesNames(subImageslist);
+
         }
 
         session.setAttribute(Const.PRODUCT_LIST,products);
@@ -48,38 +56,53 @@ public class ProductController {
 
 
 
-        return "product_list";
+        return "product/list";
 
     }
 
-    @RequestMapping(value = "update/{id}",method = RequestMethod.GET)
-    public String update(@PathVariable("id") int id,
-                         HttpSession session){
+    @RequestMapping(value = "index/{id}",method = RequestMethod.GET)
+    public String update(@PathVariable("id") Integer id,
 
-        Product product=productService.findOne(id);
-        session.setAttribute(Const.PRODUCT_INFO,product);
-        return "product_update";
+                         HttpServletRequest request){
+
+        if(id==0||id==null){
+
+        }
+        else {
+            Product product=productService.findOne(id);
+            request.setAttribute(Const.PRODUCT_INFO,product);
+        }
+
+
+        return "product/index";
 
     }
 
 
-    @RequestMapping(value = "update/{id}",method = RequestMethod.POST)
-    public String update(Product product,@PathVariable("id") int id,
-                         @RequestParam("mainImage_file")MultipartFile mainImage,
+    @RequestMapping(value = "index/{id}",method = RequestMethod.POST)
+    public String update(Product product,@PathVariable("id") Integer id,
+                         @RequestParam("mainImage_file") MultipartFile mainImage,
                          @RequestParam("subImages_files") MultipartFile[] subImages){
-        //删除之前的图片
-        Product deleteProduct=  productService.findOne(id);
-        OperateFile.deleteFile(deleteProduct.getMainImage());
 
-        String s=deleteProduct.getSubImages();
-        String m=s.substring(1,s.length()-1).replace(" ", "");
-        String[] n= m.split(",");
-        List<String> subImageslist=new ArrayList<>();
-        for(int i=0;i<n.length;i++){
-            subImageslist.add(n[i]);
+        if(id!=0&&id!=null){
+            //删除之前的图片
+            Product deleteProduct=  productService.findOne(id);
+            OperateFile.deleteFile(deleteProduct.getMainImage());
+
+            String s=deleteProduct.getSubImages();
+            String m=s.substring(1,s.length()-1).replace(" ", "");
+            String[] n= m.split(",");
+            List<String> subImageslist=new ArrayList<>();
+            for(int i=0;i<n.length;i++){
+                subImageslist.add(n[i]);
+            }
+
+            OperateFile.deleteFiles(subImageslist);
+
         }
-        OperateFile.deleteFiles(subImageslist);
-        //插入更新的图片
+
+
+        //插入图片
         if(mainImage!=null&&subImages!=null&&subImages.length>0){
 
             product.setMainImage(OperateFile.upload(mainImage));
@@ -87,52 +110,27 @@ public class ProductController {
             StringBuffer stringBuffer=new StringBuffer();
 
             List<String> list= OperateFile.upload(subImages);
+            product.setSubImagesNames(list);
 
             product.setSubImages(list.toString());
 
         }
 
-      int result= productService.update(product);
-           if(result!=0){
-               return "redirect:/user/product/all";
-           }
-
-           return "product_update";
-
-    }
-    @RequestMapping(value = "add",method = RequestMethod.GET)
-    public String add(){
-        return "product_add";
-    }
-
-    @RequestMapping(value = "add",method = RequestMethod.POST)
-    public String add(Product product,
-                      @RequestParam("mainImage_file")MultipartFile mainImage,
-                      @RequestParam("subImages_files") MultipartFile[] subImages){
-
-
-
-        if(mainImage!=null&&subImages!=null&&subImages.length>0){
-
-            product.setMainImage(OperateFile.upload(mainImage));
-
-            StringBuffer stringBuffer=new StringBuffer();
-
-            List<String> list= OperateFile.upload(subImages);
-
-
-
-            product.setSubImages(list.toString());
-
+        if(id==0||id==null){
+            productService.add(product);
+        }
+        else {
+            productService.update(product);
         }
 
+        return "redirect:/user/product/all";
 
-        if(productService.add(product)!=0){
-            return "redirect:/user/product/all";
-        }
 
-        return "product_add";
+
     }
+
+
+
     @RequestMapping(value = "delete/{id}",method = RequestMethod.GET)
     public String delete(@PathVariable("id") int id){
 
@@ -146,7 +144,6 @@ public class ProductController {
         for(int i=0;i<n.length;i++){
             subImages.add(n[i]);
         }
-
 
         OperateFile.deleteFiles(subImages);
 

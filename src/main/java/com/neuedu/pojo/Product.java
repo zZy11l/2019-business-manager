@@ -2,6 +2,7 @@ package com.neuedu.pojo;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 public class Product {
 
@@ -13,6 +14,16 @@ public class Product {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    private List<String> subImagesNames;
+
+    public List<String> getSubImagesNames() {
+        return subImagesNames;
+    }
+
+    public void setSubImagesNames(List<String> subImagesNames) {
+        this.subImagesNames = subImagesNames;
     }
 
     /**
